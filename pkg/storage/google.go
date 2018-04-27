@@ -3,6 +3,7 @@ package storage
 import (
 	"io/ioutil"
 	pathutil "path"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/context"
@@ -36,7 +37,11 @@ func NewGoogleCSBackend(bucket string, prefix string) *GoogleCSBackend {
 // ListObjects lists all objects in Google Cloud Storage bucket, at prefix
 func (b GoogleCSBackend) ListObjects(prefix string) ([]Object, error) {
 	var objects []Object
+	endsWithSlash := strings.HasSuffix(prefix, "/")
 	prefix = pathutil.Join(b.Prefix, prefix)
+	if endsWithSlash {
+		prefix = prefix + "/"
+	}
 	listQuery := &storage.Query{
 		Prefix: prefix,
 	}

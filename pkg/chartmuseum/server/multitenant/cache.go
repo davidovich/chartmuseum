@@ -26,8 +26,8 @@ import (
 	cm_repo "github.com/kubernetes-helm/chartmuseum/pkg/repo"
 	cm_storage "github.com/kubernetes-helm/chartmuseum/pkg/storage"
 
-	helm_repo "k8s.io/helm/pkg/repo"
 	"github.com/gin-gonic/gin"
+	helm_repo "k8s.io/helm/pkg/repo"
 )
 
 type (
@@ -161,7 +161,11 @@ func (server *MultiTenantServer) fetchChartsInStorage(log cm_logger.LoggingFn, r
 	log(cm_logger.DebugLevel, "Fetching chart list from storage",
 		"repo", repo,
 	)
-	allObjects, err := server.StorageBackend.ListObjects(repo)
+	objectPath := repo
+	if repo != "" {
+		objectPath = repo + "/"
+	}
+	allObjects, err := server.StorageBackend.ListObjects(objectPath)
 	if err != nil {
 		return []cm_storage.Object{}, err
 	}
